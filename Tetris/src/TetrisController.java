@@ -14,7 +14,8 @@ public class TetrisController implements Runnable {
     private EventQueue<TetrisEvent> eventQueue;
     private Score score;
 
-    private boolean isEnded;
+    private boolean isExit;
+    private boolean isGameOver;
 
     public TetrisController(int width, int height) {
         this.width = width;
@@ -35,40 +36,50 @@ public class TetrisController implements Runnable {
     }
 
     public void run() {
-        isEnded = false;
+        isExit = false;
+        isGameOver = false;
         view = new TetrisView(field, preview, score, eventQueue);
         view.run();
 
-        while (!isEnded) {
+        while (!isExit) {
             if (eventQueue.hasEvent()) {
                 TetrisEvent tetrisEvent = eventQueue.getEvent();
-                switch (tetrisEvent) {
-                    case NEW_GAME:
+                if (!isGameOver) {
+                    switch (tetrisEvent) {
+                        case NEW_GAME:
+                            view.dispatchEvent(new WindowEvent(view, WindowEvent.WINDOW_CLOSING));
+                            createGame(width, height);
+                            this.run();
+                            break;
+                        case MOVE_LEFT:
+                            moveBlockLeft();
+                            break;
+                        case MOVE_RIGHT:
+                            moveBlockRight();
+                            break;
+                        case ROTATE_LEFT:
+                            rotateBlockLeft();
+                            break;
+                        case ROTATE_RIGHT:
+                            rotateBlockRight();
+                            break;
+                        case FALL:
+                            fallBlock();
+                            break;
+                        case GAME_STEP:
+                            makeStep();
+                            break;
+                        case GAME_CLOSED:
+                            endGame();
+                            break;
+                    }
+                }
+                else {
+                    if (tetrisEvent == TetrisEvent.NEW_GAME) {
                         view.dispatchEvent(new WindowEvent(view, WindowEvent.WINDOW_CLOSING));
                         createGame(width, height);
                         this.run();
-                        break;
-                    case MOVE_LEFT:
-                        moveBlockLeft();
-                        break;
-                    case MOVE_RIGHT:
-                        moveBlockRight();
-                        break;
-                    case ROTATE_LEFT:
-                        rotateBlockLeft();
-                        break;
-                    case ROTATE_RIGHT:
-                        rotateBlockRight();
-                        break;
-                    case FALL:
-                        fallBlock();
-                        break;
-                    case GAME_STEP:
-                        makeStep();
-                        break;
-                    case GAME_CLOSED:
-                        endGame();
-                        break;
+                    }
                 }
             }
         }
@@ -80,6 +91,8 @@ public class TetrisController implements Runnable {
             for (int i = 0; i < field.getWidth(); i++) {
                 if (field.getPointAt(i, 0).getType() != null) {
                     endGame();
+                    isGameOver = true;
+                    isExit = false;
                     return;
                 }
             }
@@ -92,7 +105,7 @@ public class TetrisController implements Runnable {
     }
 
     private void endGame() {
-        isEnded = true;
+        isExit = true;
         Score.save(score.get());
     }
 

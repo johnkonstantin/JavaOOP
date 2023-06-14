@@ -61,14 +61,14 @@ public class TetrisView extends JFrame implements ActionListener {
 
     void createPanels(Field field, Field preview, Score score) {
         FieldView fieldView = new FieldView(field);
-        fieldView.setPreferredSize(new Dimension(200, 440));
+        fieldView.setPreferredSize(new Dimension(200, 445));
         FieldView previewView = new FieldView(preview);
         previewView.setPreferredSize(new Dimension(100, 100));
         ScoreView scoreView = new ScoreView(score);
         scoreView.setPreferredSize(new Dimension(100, 50));
 
         JPanel gamePanel = new JPanel();
-        gamePanel.setPreferredSize(new Dimension(200, 440));
+        gamePanel.setPreferredSize(new Dimension(200, 445));
         gamePanel.add(fieldView);
 
         JPanel previewPanel = new JPanel();
@@ -81,7 +81,7 @@ public class TetrisView extends JFrame implements ActionListener {
 
         JPanel backPanel = new JPanel();
         backPanel.setLayout(new BoxLayout(backPanel, BoxLayout.Y_AXIS));
-        backPanel.setPreferredSize(new Dimension(100, 440));
+        backPanel.setPreferredSize(new Dimension(100, 445));
         backPanel.add(previewPanel);
         backPanel.add(pointsPanel);
 
